@@ -124,7 +124,8 @@ class Arcana(QWidget):
     def display_pdf_page(self):
         page = self.doc[self.current_page]
 
-        pix = page.get_pixmap()
+        matrix = fitz.Matrix(self.zoom_factor, self.zoom_factor)
+        pix = page.get_pixmap(matrix=matrix)
 
         img = QImage(
             pix.samples,
@@ -148,14 +149,7 @@ class Arcana(QWidget):
 
     def update_image(self):
         if self.current_pixmap:
-            scaled_pixmap = self.current_pixmap.scaled(
-            int(self.current_pixmap.width() * self.zoom_factor),
-            int(self.current_pixmap.height() * self.zoom_factor),
-            Qt.AspectRatioMode.KeepAspectRatio,
-            Qt.TransformationMode.SmoothTransformation
-        )
-
-            self.image_label.setPixmap(scaled_pixmap)
+            self.image_label.setPixmap(self.current_pixmap)
 
     def next_page(self):
         if self.doc and self.current_page < len(self.doc) - 1:
@@ -171,12 +165,12 @@ class Arcana(QWidget):
 
     def zoom_in(self):
         self.zoom_factor += 0.1
-        self.update_image()
+        self.display_pdf_page()
 
     def zoom_out(self):
         if self.zoom_factor > 0.2:
             self.zoom_factor -= 0.1
-            self.update_image()
+            self.display_pdf_page()
 
     def wheelEvent(self, event):
         if event.angleDelta().y() > 0:
