@@ -150,6 +150,7 @@ class Arcana(QWidget):
     def update_image(self):
         if self.current_pixmap:
             self.image_label.setPixmap(self.current_pixmap)
+            self.image_label.resize(self.current_pixmap.size())
 
     def next_page(self):
         if self.doc and self.current_page < len(self.doc) - 1:
@@ -178,7 +179,7 @@ class Arcana(QWidget):
         else:
             if self.zoom_factor > 0.2:
                 self.zoom_factor -= 0.1
-        self.update_image()
+        self.display_pdf_page()
 
     # Trigger whenever window resizes
     def resizeEvent(self, event):
