@@ -1,6 +1,6 @@
+import os
 import sys
 import json
-import os
 import fitz
 from PyQt6.QtWidgets import QSizePolicy
 from PyQt6.QtWidgets import QHBoxLayout
@@ -88,6 +88,7 @@ class Arcana(QWidget):
 
         self.page_label = QLabel("Page: -")
         self.current_book_name = ""
+        self.library_label = QLabel("Library")
 
         controls_layout = QHBoxLayout()
         controls_layout.addWidget(self.open_button)
@@ -101,6 +102,7 @@ class Arcana(QWidget):
         layout = QVBoxLayout()
         layout.addLayout(controls_layout)
         layout.addWidget(self.scroll_area)
+        layout.addWidget(self.library_label)
 
         self.setLayout(layout)
 
@@ -109,6 +111,8 @@ class Arcana(QWidget):
         self.doc = None
         self.current_page = 0
         self.zoom_factor = 1.0
+        
+        self.update_library_display()
 
     def open_pdf(self):
         file_path, _ = QFileDialog.getOpenFileName(
@@ -119,13 +123,26 @@ class Arcana(QWidget):
         )
 
         if file_path:
-            self.current_book_name = os.path.basename(file_path)
+            self.current_book_name = os.path.splitext(
+                os.path.basename(file_path)
+            )[0]
+
+            self.save_book_to_library(
+                self.current_book_name,
+                file_path
+            )
+
+            self.update_library_display()
+
             self.doc = fitz.open(file_path)
+
             progress = self.load_progress()
+
             self.current_page = progress.get(
                 self.current_book_name,
                 0
             )
+
             self.display_pdf_page()
             self.update_page_label()
 
@@ -216,6 +233,42 @@ class Arcana(QWidget):
 
         with open("data/reading_progress.json", "w") as file:
             json.dump(progress, file, indent=4)
+
+    def load_library(self):
+
+        try:
+            with open("data/library.json", "r") as file:
+                return json.load(file)
+
+        except:
+            return {"books": []}
+
+    def update_library_display(self):
+
+        library = self.load_library()
+
+        text = "Library\n\n"
+
+        for book in library["books"]:
+            text += f"• {book['title']}\n"
+
+        self.library_label.setText(text)
+
+    def save_book_to_library(self, title, path):
+
+        library = self.load_library()
+
+        for book in library["books"]:
+            if book["path"] == path:
+                return
+
+        library["books"].append({
+            "title": title,
+            "path": path
+        })
+
+        with open("data/library.json", "w") as file:
+            json.dump(library, file, indent=4)
 
 
 app = QApplication(sys.argv)

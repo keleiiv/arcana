@@ -1,0 +1,16 @@
+{
+    "books": [
+        {
+            "title": "The Poppy War (R. F. Kuang) (z-library.sk, 1lib.sk, z-lib.sk)",
+            "path": "C:/Users/aryap/Documents/Books/The Poppy War (R. F. Kuang) (z-library.sk, 1lib.sk, z-lib.sk).pdf"
+        },
+        {
+            "title": "Red Rising (Brown, Pierce, 1988- author) (z-library.sk, 1lib.sk, z-lib.sk)",
+            "path": "C:/Users/aryap/Documents/Books/Red Rising (Brown, Pierce, 1988- author) (z-library.sk, 1lib.sk, z-lib.sk).pdf"
+        },
+        {
+            "title": "Scott_Meyers_Effective_Modern_C++",
+            "path": "C:/Users/aryap/Documents/Books/Textbooks/Scott_Meyers_Effective_Modern_C++.pdf"
+        }
+    ]
+}
