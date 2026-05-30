@@ -1,4 +1,5 @@
 import sys
+import json
 import os
 import fitz
 from PyQt6.QtWidgets import QSizePolicy
@@ -119,10 +120,12 @@ class Arcana(QWidget):
 
         if file_path:
             self.current_book_name = os.path.basename(file_path)
-
             self.doc = fitz.open(file_path)
-            self.current_page = 0
-
+            progress = self.load_progress()
+            self.current_page = progress.get(
+                self.current_book_name,
+                0
+            )
             self.display_pdf_page()
             self.update_page_label()
 
@@ -163,12 +166,14 @@ class Arcana(QWidget):
             self.current_page += 1
             self.display_pdf_page()
             self.update_page_label()
+            self.save_progress()
 
     def prev_page(self):
         if self.doc and self.current_page > 0:
             self.current_page -= 1
             self.display_pdf_page()
             self.update_page_label()
+            self.save_progress()
 
     def zoom_in(self):
         self.zoom_factor += 0.1
@@ -191,6 +196,26 @@ class Arcana(QWidget):
     def resizeEvent(self, event):
         self.update_image()
         super().resizeEvent(event)
+
+    def load_progress(self):
+        try:
+            with open("data/reading_progress.json", "r") as file:
+                return json.load(file)
+
+        except:
+            return {}
+
+    def save_progress(self):
+
+        if not self.doc:
+            return
+
+        progress = self.load_progress()
+
+        progress[self.current_book_name] = self.current_page
+
+        with open("data/reading_progress.json", "w") as file:
+            json.dump(progress, file, indent=4)
 
 
 app = QApplication(sys.argv)
