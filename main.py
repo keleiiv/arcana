@@ -1,4 +1,5 @@
 import sys
+import os
 import fitz
 from PyQt6.QtWidgets import QSizePolicy
 from PyQt6.QtWidgets import QHBoxLayout
@@ -85,6 +86,7 @@ class Arcana(QWidget):
         self.zoom_out_button.clicked.connect(self.zoom_out)
 
         self.page_label = QLabel("Page: -")
+        self.current_book_name = ""
 
         controls_layout = QHBoxLayout()
         controls_layout.addWidget(self.open_button)
@@ -116,8 +118,11 @@ class Arcana(QWidget):
         )
 
         if file_path:
+            self.current_book_name = os.path.basename(file_path)
+
             self.doc = fitz.open(file_path)
             self.current_page = 0
+
             self.display_pdf_page()
             self.update_page_label()
 
@@ -144,6 +149,7 @@ class Arcana(QWidget):
             total_pages = len(self.doc)
 
             self.page_label.setText(
+                f"{self.current_book_name} | "
                 f"Page {self.current_page + 1} / {total_pages}"
             )
 
